@@ -21,11 +21,18 @@ async function run() {
         const serviceCollection = database.collection('services');
         const orderCollection = database.collection('orders');
 
+        // ADD NEW SERVICE API
+        app.post('/services', async (req, res) => {
+            const service = req.body;
+            const result = await serviceCollection.insertOne(service)
+            res.json(result)
+        })
+
         // GET Services API
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
-            res.send(services);
+            res.json(services);
         });
 
         // GET SINGLE SERVICE
@@ -49,6 +56,15 @@ async function run() {
             const cursor = orderCollection.find({});
             const orders = await cursor.toArray();
             res.send(orders);
+        });
+
+        // ORDERS DELETE API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await orderCollection.deleteOne(query);
+            console.log('Deleting ', result);
+            res.json(result)
         })
         
     }finally {
